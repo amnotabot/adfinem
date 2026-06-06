@@ -1,0 +1,88 @@
+version: 1
+id: account_processing_cycle
+name: Account processing cycle
+environment: local
+variables:
+  processing_date: "2026-04-27"
+nodes:
+  - id: create_case
+    label: Create test case
+    type: api_operation
+    operation: create_test_case
+    input:
+      tenant: demo
+      external_id: CASE-3001
+      case_type: account-processing
+    capture:
+      case_id: $.case.id
+      case_status: $.case.status
+  - id: record_activity
+    label: Record test activity
+    type: api_operation
+    operation: record_test_activity
+    input:
+      case_id: ${create_case.case_id}
+      amount: 100
+      currency: USD
+      activity_type: adjustment
+    capture:
+      activity_id: $.activity.id
+      activity_status: $.activity.status
+  - id: assert_activity
+    label: Assert activity exists
+    type: db_assert
+    query: test_activity_exists
+    params:
+      case_id: ${create_case.case_id}
+      amount: 100
+  - id: processing_loop
+    label: Processing loop
+    type: loop
+    loop:
+      mode: count
+      count: 2
+      itemName: run
+      maxIterations: 10
+      dateCursor:
+        outputName: processing_date
+        start: ${processing_date}
+        inputFormat: YYYY-MM-DD
+        outputFormat: YYYY-MM-DD
+        advance:
+          mode: days
+          amount: 1
+    nodes:
+      - id: run_processing
+        label: Run daily processing
+        type: unix_batch
+        batch: daily_processing
+        params:
+          processing_date: ${processing_loop.processing_date}
+      - id: assert_processing
+        label: Assert processing balanced
+        type: db_assert
+        query: processing_balanced
+        params:
+          case_id: ${create_case.case_id}
+          processing_date: ${processing_loop.processing_date}
+edges:
+  - from: create_case
+    to: record_activity
+  - from: record_activity
+    to: assert_activity
+  - from: assert_activity
+    to: processing_loop
+ui:
+  positions:
+    create_case:
+      x: -360
+      y: 0
+    record_activity:
+      x: -160
+      y: 180
+    assert_activity:
+      x: 60
+      y: 360
+    processing_loop:
+      x: 340
+      y: 520

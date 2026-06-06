@@ -1,0 +1,21 @@
+create_test_case:
+  description: Creates a generic test case through an allowlisted API operation.
+  type: rest
+  method: POST
+  path: "/api/test-cases"
+  requestTemplate: "templates/api/create-test-case.json"
+  idempotent: false
+  captures:
+    case_id: "$.case.id"
+    case_status: "$.case.status"
+
+record_test_activity:
+  description: Records a generic activity against an existing test case.
+  type: rest
+  method: POST
+  path: "/api/test-activities"
+  requestTemplate: "templates/api/record-test-activity.json"
+  idempotent: false
+  captures:
+    activity_id: "$.activity.id"
+    activity_status: "$.activity.status"

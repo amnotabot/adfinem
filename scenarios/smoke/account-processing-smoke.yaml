@@ -1,0 +1,44 @@
+id: account_processing_smoke
+environment: local
+variables:
+  processing_date: "2026-04-27"
+steps:
+  - id: create_case
+    action: create_test_case
+    via: api
+    input:
+      tenant: "demo"
+      external_id: "CASE-1001"
+      case_type: "account-processing"
+
+  - id: record_activity
+    action: record_test_activity
+    via: api
+    input:
+      case_id: "${case_id}"
+      amount: 100.00
+      currency: "USD"
+      activity_type: "adjustment"
+
+  - id: assert_activity
+    action: db_assert
+    via: db
+    query: test_activity_exists
+    params:
+      case_id: "${case_id}"
+      amount: 100.00
+
+  - id: run_processing
+    action: unix_batch
+    via: unix
+    batch: daily_processing
+    params:
+      processing_date: "${processing_date}"
+
+  - id: assert_processing
+    action: db_assert
+    via: db
+    query: processing_balanced
+    params:
+      case_id: "${case_id}"
+      processing_date: "${processing_date}"

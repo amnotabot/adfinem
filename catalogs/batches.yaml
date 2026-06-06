@@ -1,0 +1,74 @@
+daily_processing:
+  description: Runs a daily processing batch for a processing date.
+  hostRef: qa_worker
+  command: run_daily_processing.sh
+  args:
+    - name: processing_date
+      required: true
+      pattern: ^\d{4}-\d{2}-\d{2}$
+  timeoutSeconds: 3600
+  success:
+    exitCodes:
+      - 0
+    requiredOutput:
+      - SUCCESS
+  captures:
+    daily_processing_exit_code: $.exitCode
+
+nightly_reconciliation:
+  description: Runs a generic nightly reconciliation batch.
+  hostRef: qa_worker
+  command: sh
+  fixedArgs:
+    - -x
+    - reconcile_nightly.sh
+    - reconcile_nightly.log
+  workingDirectory: ${ADFINEM_BATCH_WORKDIR}
+  timeoutSeconds: 7200
+  success:
+    exitCodes:
+      - 0
+      - 1
+  captures:
+    nightly_reconciliation_exit_code: $.exitCode
+
+report_generation:
+  description: Generates a generic QA report.
+  hostRef: qa_worker
+  command: sh
+  fixedArgs:
+    - -x
+    - generate_report.sh
+    - generate_report.log
+  workingDirectory: ${ADFINEM_BATCH_WORKDIR}
+  timeoutSeconds: 3600
+  success:
+    exitCodes:
+      - 0
+  outputFiles:
+    - name: report
+      source: stderr
+      pathPattern: "Generated file:\\s*(\\S+)"
+      download: true
+  captures:
+    report_generation_exit_code: $.exitCode
+
+import_transactions:
+  description: Imports a generic transaction file for downstream checks.
+  hostRef: qa_worker
+  command: sh
+  fixedArgs:
+    - -x
+    - import_transactions.sh
+    - ${transactions_file}
+  inputFiles:
+    - name: transactions_file
+      required: true
+      remotePath: /tmp/adfinem/inbox/
+      paramName: transactions_file
+  timeoutSeconds: 3600
+  success:
+    exitCodes:
+      - 0
+  captures:
+    import_transactions_exit_code: $.exitCode

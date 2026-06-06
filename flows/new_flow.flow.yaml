@@ -1,0 +1,22 @@
+version: 1
+id: new_flow
+name: New flow
+environment: local
+variables: {}
+nodes:
+  - id: import_transactions
+    label: Import transactions
+    params:
+      transactions_file:
+        fileName: transactions.csv
+        localPath: data/batch-input-files/new_flow/import_transactions/transactions_file/transactions.csv
+        sizeBytes: 128
+        remotePath: /tmp/adfinem/inbox/
+    type: unix_batch
+    batch: import_transactions
+edges: []
+ui:
+  positions:
+    import_transactions:
+      x: 18
+      y: -150

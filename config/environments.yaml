@@ -1,0 +1,13 @@
+local:
+  apiBaseUrl: "${ADFINEM_API_BASE_URL}"
+  apiTlsInsecure: "${ADFINEM_API_TLS_INSECURE}"
+  oracle:
+    user: "${ADFINEM_DB_USER}"
+    password: "${ADFINEM_DB_PASSWORD}"
+    connectString: "${ADFINEM_DB_CONNECT_STRING}"
+  sshHosts:
+    qa_worker:
+      host: "${ADFINEM_SSH_QA_WORKER_HOST}"
+      username: "${ADFINEM_SSH_USER}"
+      password: "${ADFINEM_SSH_PASSWORD}"
+      privateKeyPath: "${ADFINEM_SSH_PRIVATE_KEY_PATH}"

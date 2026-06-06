@@ -1,0 +1,75 @@
+set_processing_date:
+  description: Updates a generic processing date before running batch automation.
+  mode: execute
+  sql: |
+    update test_run_control
+       set processing_date = to_date(:processing_date, 'YYYY-MM-DD')
+     where control_name = 'default';
+    commit;
+  params:
+    processing_date:
+      required: true
+      type: string
+      pattern: ^\d{4}-\d{2}-\d{2}$
+
+test_activity_exists:
+  description: Verifies an activity was recorded for a test case and amount.
+  sql: |
+    select count(*) as CNT
+      from test_activity
+     where case_id = :case_id
+       and amount = :amount
+  params:
+    case_id:
+      required: true
+      pattern: ^[0-9A-Za-z_-]+$
+    amount:
+      required: true
+      type: number
+  expect:
+    type: number
+    column: CNT
+    operator: ">"
+    value: 0
+  captures:
+    activity_count: $.rows[0].CNT
+
+processing_balanced:
+  description: Verifies debit and credit totals are balanced for a test case and processing date.
+  sql: |
+    select abs(nvl(sum(debit_amount), 0) - nvl(sum(credit_amount), 0)) as DIFF
+      from test_ledger_entry
+     where case_id = :case_id
+       and processing_date = to_date(:processing_date, 'YYYY-MM-DD')
+  params:
+    case_id:
+      required: true
+      pattern: ^[0-9A-Za-z_-]+$
+    processing_date:
+      required: true
+      pattern: ^\d{4}-\d{2}-\d{2}$
+  expect:
+    type: number
+    column: DIFF
+    operator: =
+    value: 0
+  captures:
+    balance_diff: $.rows[0].DIFF
+
+case_by_external_id:
+  description: Retrieves a generic test case by external identifier.
+  sql: |
+    select case_id as CASE_ID, status as STATUS
+      from test_case
+     where external_id = :external_id
+  params:
+    external_id:
+      required: true
+      type: string
+  expect:
+    type: rowCount
+    operator: ">"
+    value: 0
+  captures:
+    case_id: $.rows[0].CASE_ID
+    case_status: $.rows[0].STATUS

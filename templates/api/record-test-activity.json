@@ -1,0 +1,6 @@
+{
+  "caseId": "${case_id}",
+  "amount": ${amount},
+  "currency": "${currency}",
+  "activityType": "${activity_type}"
+}

@@ -1,0 +1,40 @@
+id: api_db_batch_check
+environment: local
+variables:
+  processing_date: "2026-04-27"
+
+steps:
+  - id: create_case
+    action: create_test_case
+    via: api
+    input:
+      tenant: "demo"
+      external_id: "CASE-2001"
+      case_type: "api-db-batch"
+
+  - id: record_activity
+    action: record_test_activity
+    via: api
+    input:
+      case_id: "${case_id}"
+      amount: 111
+      currency: "USD"
+      activity_type: "posting"
+
+  - id: run_processing
+    action: unix_batch
+    via: unix
+    batch: daily_processing
+    params:
+      processing_date: "${processing_date}"
+    retry:
+      attempts: 2
+      delaySeconds: 30
+
+  - id: assert_processing
+    action: db_assert
+    via: db
+    query: processing_balanced
+    params:
+      case_id: "${case_id}"
+      processing_date: "${processing_date}"

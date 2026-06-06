@@ -1,0 +1,26 @@
+﻿
+# Dependencies
+node_modules/
+web-dist/
+app-server.log
+app-server.err.log
+.codex-app.*.log
+.env
+.claude/
+
+# Test/artifact folders: ignore contents, keep folder
+evidence/*
+!evidence/.gitkeep
+
+data/batch-input-files/
+
+docs/*
+!docs/.gitkeep
+!docs/DB_UNIX_OPERATIONS.md
+!docs/FLOW_BUILDER.md
+
+catalogs/*
+!catalogs/.gitkeep
+!catalogs/api-operations.yaml
+!catalogs/batches.yaml
+!catalogs/queries.yaml
