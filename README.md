@@ -1,6 +1,8 @@
 # Adfinem
 
-Open-source QA test helper for deterministic API, database, Unix batch, and workflow automation.
+Open-source end-to-end QA test helper for deterministic API, database, Unix batch, and workflow automation.
+
+Adfinem is built for testers working on enterprise-grade business solutions where repeatable, catalog-gated checks matter.
 
 Adfinem executes catalog-gated workflows only. Scenario YAML can reference:
 
