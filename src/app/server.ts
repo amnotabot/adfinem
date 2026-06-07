@@ -26,11 +26,12 @@ import type { BatchCatalogEntry, QueryCatalogEntry, StepResult } from "../dsl/ty
 import { importPostmanCollection, loadApiCollections, previewPostmanCollection } from "../adapters/api/api-collections.js";
 import { normalizeBindParamRecord, normalizeQueryCatalog } from "../adapters/db/query-catalog.js";
 
-const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const rootDir = resolve(process.env.ADFINEM_PROJECT_ROOT ?? packageRoot);
 const flowsDir = join(rootDir, "flows");
 const evidenceDir = join(rootDir, "evidence");
 const batchInputFilesDir = join(rootDir, "data", "batch-input-files");
-const webDistDir = join(rootDir, "web-dist");
+const webDistDir = resolve(process.env.ADFINEM_WEB_DIST ?? join(packageRoot, "web-dist"));
 const queriesFile = join(rootDir, "catalogs", "queries.yaml");
 const batchesFile = join(rootDir, "catalogs", "batches.yaml");
 const catalogYamlOptions = { defaultStringType: "PLAIN", defaultKeyType: "PLAIN", lineWidth: 0 } as const;

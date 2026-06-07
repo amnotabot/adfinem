@@ -1,6 +1,6 @@
 {
   "name": "adfinem",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Open-source QA test helper for deterministic API, database, Unix, and workflow automation",
   "keywords": [
     "qa",
@@ -31,12 +31,14 @@
     "dist",
     "src",
     "web",
+    "web-dist",
     "catalogs",
     "config",
     "flows",
     "scenarios",
     "templates",
     "docs",
+    ".env.example",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",

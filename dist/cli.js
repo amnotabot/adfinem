@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { writeFile } from "node:fs/promises";
+import { access, cp, mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ZodError } from "zod";
@@ -21,12 +21,60 @@ import { compileFlow } from "./flows/compiler.js";
 import { loadFlow, readFlowSource, writeFlow } from "./flows/parser.js";
 import { validateFlow } from "./flows/validator.js";
 import { concatFlows } from "./flows/concat.js";
-const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const rootDir = resolve(process.env.ADFINEM_PROJECT_ROOT ?? process.cwd());
 const program = new Command();
 program
     .name("adfinem")
     .description("Adfinem deterministic API, database, and Unix scenario runner")
-    .version("0.1.0");
+    .version("0.1.1");
+program
+    .command("init")
+    .argument("[directory]", "Project directory to create or update", ".")
+    .description("Create a starter Adfinem project with catalogs, config, scenarios, flows, docs, and templates")
+    .option("--force", "Overwrite starter files that already exist")
+    .action(async (directory, options) => {
+    await handleErrors(async () => {
+        const targetRoot = resolve(process.cwd(), directory);
+        await mkdir(targetRoot, { recursive: true });
+        const entries = ["catalogs", "config", "flows", "scenarios", "templates", "docs", ".env.example"];
+        const copied = [];
+        const skipped = [];
+        for (const entry of entries) {
+            const source = join(packageRoot, entry);
+            const target = join(targetRoot, entry);
+            if (!options.force && await pathExists(target)) {
+                skipped.push(entry);
+                continue;
+            }
+            await cp(source, target, { recursive: true, force: Boolean(options.force) });
+            copied.push(entry);
+        }
+        console.log(`Adfinem project ready: ${targetRoot}`);
+        if (copied.length > 0)
+            console.log(`Created: ${copied.join(", ")}`);
+        if (skipped.length > 0)
+            console.log(`Skipped existing: ${skipped.join(", ")} (use --force to overwrite)`);
+        console.log("Next:");
+        console.log(`  cd ${targetRoot}`);
+        console.log("  adfinem validate scenarios/smoke/account-processing-smoke.yaml");
+        console.log("  adfinem app");
+    });
+});
+program
+    .command("app")
+    .description("Start the Adfinem web workbench for the current project")
+    .option("--project <dir>", "Project root containing catalogs, config, scenarios, and flows", ".")
+    .option("--port <port>", "Port to bind; defaults to 4177 with fallback ports", parseInteger)
+    .action(async (options) => {
+    await handleErrors(async () => {
+        process.env.ADFINEM_PROJECT_ROOT = resolve(process.cwd(), options.project);
+        process.env.ADFINEM_WEB_DIST = join(packageRoot, "web-dist");
+        if (options.port !== undefined)
+            process.env.ADFINEM_RUNNER_PORT = String(options.port);
+        await import("./app/server.js");
+    });
+});
 program
     .command("validate")
     .argument("<scenario>", "Scenario YAML path")
@@ -389,6 +437,9 @@ function parseInteger(value) {
     if (!Number.isFinite(parsed) || parsed < 0)
         throw new Error(`Invalid integer: ${value}`);
     return parsed;
+}
+async function pathExists(path) {
+    return access(path).then(() => true).catch(() => false);
 }
 function collectOption(value, previous) {
     return [...previous, value];

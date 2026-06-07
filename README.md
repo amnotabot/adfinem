@@ -33,7 +33,10 @@ The published CLI can also be installed globally:
 
 ```bash
 npm install -g adfinem
+adfinem init my-adfinem-tests
+cd my-adfinem-tests
 adfinem validate scenarios/smoke/account-processing-smoke.yaml
+adfinem app
 ```
 
 ## Commands
@@ -51,20 +54,27 @@ npm run smoke:dry
 Adfinem can be used fully from the terminal when a GUI is not wanted.
 
 ```bash
+# Create a starter project when using the global package
+adfinem init my-adfinem-tests
+cd my-adfinem-tests
+
+# Open the web workbench for the current project
+adfinem app
+
 # Validate a scenario before running it
-npm run adfinem -- validate scenarios/smoke/account-processing-smoke.yaml
+adfinem validate scenarios/smoke/account-processing-smoke.yaml
 
 # Run a scenario without external side effects
-npm run adfinem -- run scenarios/smoke/account-processing-smoke.yaml --env local --dry-run
+adfinem run scenarios/smoke/account-processing-smoke.yaml --env local --dry-run
 
 # Execute a cataloged API operation
-npm run adfinem -- api-call create_test_case --env local --param tenant=demo --param external_id=CASE-1001 --param case_type=account-processing
+adfinem api-call create_test_case --env local --param tenant=demo --param external_id=CASE-1001 --param case_type=account-processing
 
 # Execute a cataloged DB query
-npm run adfinem -- db-query test_activity_exists --env local --param case_id=CASE-1001 --param amount=json:111
+adfinem db-query test_activity_exists --env local --param case_id=CASE-1001 --param amount=json:111
 
 # Run a cataloged Unix batch
-npm run adfinem -- run-batch daily_processing --env local --param processing_date=2026-04-27
+adfinem run-batch daily_processing --env local --param processing_date=2026-04-27
 ```
 
 Use `--dry-run` while catalogs and environment credentials are still being completed.
