@@ -1,17 +1,70 @@
 {
   "name": "adfinem",
   "version": "0.1.0",
+  "description": "Open-source QA test helper for deterministic API, database, Unix, and workflow automation",
+  "keywords": [
+    "qa",
+    "testing",
+    "api",
+    "database",
+    "unix",
+    "workflow",
+    "automation",
+    "cli"
+  ],
+  "author": "Adfinem contributors",
+  "license": "MIT",
   "private": false,
+  "homepage": "https://github.com/amnotabot/adfinem#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amnotabot/adfinem.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amnotabot/adfinem/issues"
+  },
   "type": "module",
+  "bin": {
+    "adfinem": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "web",
+    "catalogs",
+    "config",
+    "flows",
+    "scenarios",
+    "templates",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "tsconfig.json",
+    "vite.config.ts"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "adfinem": "tsx src/cli.ts",
     "cli": "tsx src/cli.ts",
     "test": "tsx --test tests/api-only.test.ts",
+    "check": "npm run build && npm test",
     "validate": "tsx src/cli.ts validate scenarios/smoke/account-processing-smoke.yaml",
     "smoke:dry": "tsx src/cli.ts run scenarios/smoke/account-processing-smoke.yaml --env local --dry-run",
     "web:build": "vite build",
-    "app": "npm run web:build && tsx src/app/server.ts"
+    "app": "npm run web:build && tsx src/app/server.ts",
+    "package:dry-run": "npm pack --dry-run --json",
+    "release:validate": "npm run check && npm run web:build && npm run validate && npm run smoke:dry && npm run package:dry-run",
+    "prepublishOnly": "npm run release:validate"
   },
   "dependencies": {
     "@xyflow/react": "^12.10.2",
