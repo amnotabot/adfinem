@@ -29,7 +29,7 @@ npm install
 npm run check
 ```
 
-When published to npm, the CLI can also be installed globally:
+The published CLI can also be installed globally:
 
 ```bash
 npm install -g adfinem
