@@ -10,6 +10,18 @@ Adfinem executes catalog-gated workflows only. Scenario YAML can reference:
 - `catalogs/queries.yaml`
 - `catalogs/batches.yaml`
 
+## What It Does
+
+Adfinem lets QA teams define repeatable end-to-end checks that combine:
+
+- REST API calls from an allowlisted operation catalog
+- database queries, assertions, and execution steps
+- Unix commands over SSH, including batch operations and file-backed processing
+- SFTP file placement before Unix jobs and output retrieval after they finish
+- flow files that chain API, DB, and Unix actions together
+- dry-run validation before touching external systems
+- evidence output for executed runs
+
 ## Install
 
 ```bash
