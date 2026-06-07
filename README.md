@@ -18,7 +18,7 @@ Adfinem lets QA teams define repeatable end-to-end checks that combine:
 - database queries, assertions, and execution steps
 - Unix commands over SSH, including batch operations and file-backed processing
 - SFTP file placement before Unix jobs and output retrieval after they finish
-- flow files that chain API, DB, and Unix actions together
+- workflow files that chain API, DB, Unix, loop, parallel, and reusable flow blocks
 - dry-run validation before touching external systems
 - evidence output for executed runs
 
