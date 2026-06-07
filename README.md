@@ -32,9 +32,26 @@ npm test
 npm run build
 npm run validate
 npm run smoke:dry
+```
+
+## CLI-Only Usage
+
+Adfinem can be used fully from the terminal when a GUI is not wanted.
+
+```bash
+# Validate a scenario before running it
+npm run adfinem -- validate scenarios/smoke/account-processing-smoke.yaml
+
+# Run a scenario without external side effects
 npm run adfinem -- run scenarios/smoke/account-processing-smoke.yaml --env local --dry-run
+
+# Execute a cataloged API operation
 npm run adfinem -- api-call create_test_case --env local --param tenant=demo --param external_id=CASE-1001 --param case_type=account-processing
+
+# Execute a cataloged DB query
 npm run adfinem -- db-query test_activity_exists --env local --param case_id=CASE-1001 --param amount=json:111
+
+# Run a cataloged Unix batch
 npm run adfinem -- run-batch daily_processing --env local --param processing_date=2026-04-27
 ```
 
